@@ -18,11 +18,11 @@ public class Vote {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	private LocalDateTime createdAt = LocalDateTime.now();
 	@OneToOne
 	private Associate associate;
 	@ManyToOne
 	private Session session;
-	private LocalDateTime createdAt = LocalDateTime.now();
 	@Enumerated(EnumType.STRING)
 	private VoteEnum vote;
 

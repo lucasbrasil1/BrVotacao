@@ -1,20 +1,42 @@
 package br.com.compasso.votacao.service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.compasso.votacao.controller.form.SessionForm;
+import br.com.compasso.votacao.entity.Schedule;
 import br.com.compasso.votacao.entity.Session;
-import br.com.compasso.votacao.enumeration.SessionStatusEnum;
+import br.com.compasso.votacao.entity.Vote;
+import br.com.compasso.votacao.repository.SessionRepository;
 
 @Service
 public class SessionService {
 
-	public void start(Session session) {
-		session.setBegining(LocalDateTime.now());
-		LocalDateTime end = session.getBegining().plusMinutes(session.getMinutes());
-		session.setEnding(end);
-		session.setStatus(SessionStatusEnum.EM_VOTACAO);
+	@Autowired
+	private SessionRepository sessionRepository;
+	
+	public void addToListVote(Vote vote) {
+		vote.getSession().addVoteToList(vote);
+	}
+
+	public Session get(Long idSession) {
+		return sessionRepository.getOne(idSession);
+	}
+
+	public List<Session> getAll() {
+		return sessionRepository.findAll();
+	}
+
+	public Session convert(SessionForm form, ScheduleService scheduleService) {
+		Schedule schedule = scheduleService.get(form.getIdSchedule());
+		Integer time = form.getTimeInMinutes();
+		return new Session(schedule, time);
+	}
+
+	public void save(Session session) {
+		sessionRepository.save(session);
 	}
 	
 }

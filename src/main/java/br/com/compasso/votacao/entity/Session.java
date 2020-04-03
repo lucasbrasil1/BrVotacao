@@ -2,6 +2,7 @@ package br.com.compasso.votacao.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -19,16 +20,16 @@ public class Session {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private LocalDateTime begining;
+	private LocalDateTime begining = LocalDateTime.now();
 	private LocalDateTime ending;
 	@OneToOne
 	private Schedule schedule;
 	@Enumerated(EnumType.STRING)
-	private SessionStatusEnum status = SessionStatusEnum.AGUARDANDO;
+	private SessionStatusEnum status = SessionStatusEnum.EM_VOTACAO;
 	private Integer minutes;
 	@OneToMany
 	private List<Vote> votes;
-
+	
 	public Session() {
 	}
 
@@ -91,6 +92,10 @@ public class Session {
 
 	public void setVotes(List<Vote> votes) {
 		this.votes = votes;
+	}
+	
+	public void addVoteToList(Vote vote) {
+		votes.add(vote);
 	}
 
 }

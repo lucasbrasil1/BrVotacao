@@ -35,8 +35,4 @@ public class VoteForm {
 	public void setIdSession(Long idSession) {
 		this.idSession = idSession;
 	}
-
-	public Vote convert(AssociateRepository associateRepository, SessionRepository sessionRepository) {
-		return new Vote(associateRepository.getOne(this.idAssociate), sessionRepository.getOne(idSession), VoteEnum.valueOf(this.vote));
-	}
 }
