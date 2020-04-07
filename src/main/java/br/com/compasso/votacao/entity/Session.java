@@ -1,7 +1,6 @@
 package br.com.compasso.votacao.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,11 +8,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import org.springframework.stereotype.Component;
 
 import br.com.compasso.votacao.enumeration.SessionStatusEnum;
 
+@Component
 @Entity
 public class Session {
 
@@ -23,19 +24,18 @@ public class Session {
 	private LocalDateTime begining = LocalDateTime.now();
 	private LocalDateTime ending;
 	@OneToOne
-	private Schedule schedule;
+	private Topic topic;
 	@Enumerated(EnumType.STRING)
 	private SessionStatusEnum status = SessionStatusEnum.EM_VOTACAO;
 	private Integer minutes;
-	@OneToMany
-	private List<Vote> votes;
-	
+
 	public Session() {
 	}
 
-	public Session(Schedule schedule, Integer minutes) {
-		this.schedule = schedule;
+	public Session(Topic topic, Integer minutes) {
+		this.topic = topic;
 		this.minutes = minutes;
+		this.ending = begining.plusMinutes(minutes);
 	}
 
 	public SessionStatusEnum getStatus() {
@@ -70,12 +70,12 @@ public class Session {
 		this.ending = ending;
 	}
 
-	public Schedule getSchedule() {
-		return schedule;
+	public Topic getSchedule() {
+		return topic;
 	}
 
-	public void setSchedule(Schedule schedule) {
-		this.schedule = schedule;
+	public void setSchedule(Topic topic) {
+		this.topic = topic;
 	}
 
 	public Integer getMinutes() {
@@ -86,16 +86,7 @@ public class Session {
 		this.minutes = minutes;
 	}
 
-	public List<Vote> getVotes() {
-		return votes;
-	}
-
-	public void setVotes(List<Vote> votes) {
-		this.votes = votes;
-	}
 	
-	public void addVoteToList(Vote vote) {
-		votes.add(vote);
-	}
+
 
 }

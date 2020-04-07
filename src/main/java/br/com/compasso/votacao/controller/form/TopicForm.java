@@ -1,8 +1,8 @@
 package br.com.compasso.votacao.controller.form;
 
-import br.com.compasso.votacao.entity.Schedule;
+import br.com.compasso.votacao.entity.Topic;
 
-public class ScheduleForm {
+public class TopicForm {
 
 	private String title;
 	private String description;
@@ -23,8 +23,8 @@ public class ScheduleForm {
 		this.description = description;
 	}
 
-	public Schedule convert() {
-		return new Schedule(title, description);
+	public Topic convert() {
+		return new Topic(title, description);
 	}
 
 }

@@ -1,6 +1,7 @@
 package br.com.compasso.votacao.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -8,12 +9,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import br.com.compasso.votacao.enumeration.ScheduleStatusEnum;
+import br.com.compasso.votacao.enumeration.TopicStatusEnum;
+import br.com.compasso.votacao.enumeration.VoteEnum;
 
 @Entity
-public class Schedule {
+public class Topic {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,16 +24,18 @@ public class Schedule {
 	private String title;
 	private String description;
 	@Enumerated(EnumType.STRING)
-	private ScheduleStatusEnum status;
+	private TopicStatusEnum status;
 	private LocalDateTime createdAt = LocalDateTime.now();
 	@OneToOne
 	private Associate author;
 	private Integer votesYes = 0;
 	private Integer votesNo = 0;
+	@OneToMany
+	private List<Vote> votes;
 
-	public Schedule() {}
+	public Topic() {}
 	
-	public Schedule(String title, String description) {
+	public Topic(String title, String description) {
 		this.title = title;
 		this.description = description;
 	}
@@ -51,7 +56,7 @@ public class Schedule {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Schedule other = (Schedule) obj;
+		Topic other = (Topic) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -84,11 +89,15 @@ public class Schedule {
 		this.description = description;
 	}
 
-	public ScheduleStatusEnum getStatus() {
+	public TopicStatusEnum getStatus() {
 		return status;
 	}
+	
+	public String getStatusString() {
+		return status.toString();
+	}
 
-	public void setStatus(ScheduleStatusEnum status) {
+	public void setStatus(TopicStatusEnum status) {
 		this.status = status;
 	}
 
@@ -122,6 +131,43 @@ public class Schedule {
 
 	public void setVotesNo(Integer votesNo) {
 		this.votesNo = votesNo;
+	}
+
+
+	public List<Vote> getVotes() {
+		return votes;
+	}
+
+	public void setVotes(List<Vote> votes) {
+		this.votes = votes;
+	}
+
+	public void addVoteToList(Vote vote) {
+		assignVoteValue(vote);
+		votes.add(vote);
+	}
+
+	private void assignVoteValue(Vote vote) {
+		if(voteToYes(vote))
+			addVoteToYes();
+		else 
+			addVoteToNo();
+	}
+	
+	private void addVoteToYes() {
+		this.votesYes++;
+	}
+	
+	private void addVoteToNo() {
+		this.votesNo++;
+	}
+
+	public boolean voteToYes(Vote vote) {
+		return vote.getVote().equals(VoteEnum.SIM);
+	}
+	
+	public TopicStatusEnum getScheduleStatusEnum() {
+		return getVotesYes() > getVotesNo() ? TopicStatusEnum.APROVADO : TopicStatusEnum.NEGADO;
 	}
 
 }

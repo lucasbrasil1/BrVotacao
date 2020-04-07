@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import br.com.compasso.votacao.controller.dto.SessionDTO;
 import br.com.compasso.votacao.controller.form.SessionForm;
 import br.com.compasso.votacao.entity.Session;
-import br.com.compasso.votacao.service.ScheduleService;
+import br.com.compasso.votacao.service.TopicService;
 import br.com.compasso.votacao.service.SessionService;
 
 @RestController
@@ -29,7 +29,7 @@ public class SessionController {
 	private SessionService sessionService;
 	
 	@Autowired
-	private ScheduleService scheduleService;
+	private TopicService topicService;
 
 	@GetMapping
 	public List<SessionDTO> lista(){
@@ -42,11 +42,11 @@ public class SessionController {
 		Session session = sessionService.get(id);
 		return new SessionDTO(session);
 	}
-	
+
 	@PostMapping
 	@Transactional
 	public ResponseEntity<SessionDTO> cadastraSessao(@RequestBody SessionForm form, UriComponentsBuilder uriBuilder){
-		Session session = sessionService.convert(form, scheduleService);
+		Session session = sessionService.convert(form, topicService);
 		sessionService.save(session);
 		
 		URI uri = uriBuilder.path("/session/{$id}").buildAndExpand(session.getId()).toUri();

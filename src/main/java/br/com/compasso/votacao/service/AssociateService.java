@@ -1,17 +1,24 @@
 package br.com.compasso.votacao.service;
 
-import org.springframework.stereotype.Service;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import br.com.compasso.votacao.entity.Associate;
 import br.com.compasso.votacao.repository.AssociateRepository;
 
-@Service
+@Component
 public class AssociateService {
 
+	@Autowired
 	private AssociateRepository associateRepository;
 
 	public Associate get(Long idAssociate) {
-		return associateRepository.getOne(idAssociate);
+		Optional<Associate> associate = associateRepository.findById(idAssociate);
+		if(associate.isPresent())
+			return associate.get();
+		throw new NullPointerException("Associate not found!");
 	}
 	
 	

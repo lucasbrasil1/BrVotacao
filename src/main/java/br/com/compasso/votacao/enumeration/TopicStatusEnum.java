@@ -1,6 +1,6 @@
 package br.com.compasso.votacao.enumeration;
 
-public enum ScheduleStatusEnum {
+public enum TopicStatusEnum {
 
 	APROVADO,
 	NEGADO;

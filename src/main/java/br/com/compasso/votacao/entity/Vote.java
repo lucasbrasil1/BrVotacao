@@ -100,5 +100,21 @@ public class Vote {
 		this.vote = vote;
 	}
 
+	public Long getIdAssociate(Vote vote) {
+		return vote.getAssociate().getId();
+	}
+
+	public Long getSessionId() {
+		return getSession().getId();
+	}
+
+	public Topic getTopic() {
+		return getSession().getSchedule();
+	}
+	
+	public Long getTopicId() {
+		return getTopic().getId();
+	}
+	
 
 }

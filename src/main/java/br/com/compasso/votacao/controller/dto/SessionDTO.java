@@ -11,6 +11,7 @@ public class SessionDTO {
 	private Long id;
 	private Integer minutes;
 	private LocalDateTime beginAt;
+	private LocalDateTime endAt;
 	private String scheduleTitle;
 	private String description;
 
@@ -18,6 +19,7 @@ public class SessionDTO {
 		this.id = session.getId();
 		this.minutes = session.getMinutes();
 		this.beginAt = session.getBegining();
+		this.endAt = session.getEnding();
 		this.scheduleTitle = session.getSchedule().getTitle();
 		this.description = session.getSchedule().getDescription();
 	}
@@ -44,6 +46,10 @@ public class SessionDTO {
 
 	public static List<SessionDTO> convert(List<Session> sessions) {
 		return sessions.stream().map(SessionDTO::new).collect(Collectors.toList());
+	}
+
+	public LocalDateTime getEndAt() {
+		return endAt;
 	}
 
 }

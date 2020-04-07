@@ -1,12 +1,14 @@
 package br.com.compasso.votacao.controller.form;
 
+import br.com.compasso.votacao.entity.Associate;
+import br.com.compasso.votacao.entity.Session;
 import br.com.compasso.votacao.entity.Vote;
 import br.com.compasso.votacao.enumeration.VoteEnum;
-import br.com.compasso.votacao.repository.AssociateRepository;
-import br.com.compasso.votacao.repository.SessionRepository;
+import br.com.compasso.votacao.service.AssociateService;
+import br.com.compasso.votacao.service.SessionService;
 
 public class VoteForm {
-
+	
 	private Long idAssociate;
 	private Long idSession;
 	private String vote;
@@ -35,4 +37,11 @@ public class VoteForm {
 	public void setIdSession(Long idSession) {
 		this.idSession = idSession;
 	}
+	
+	public Vote convert(AssociateService associateService, SessionService sessionService) {
+		Associate associate = associateService.get(idAssociate);
+		Session session = sessionService.get(idSession);
+		return new Vote(associate, session, VoteEnum.valueOf(getVote()));
+	}
+	
 }
