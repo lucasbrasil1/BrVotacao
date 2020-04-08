@@ -3,6 +3,7 @@ package br.com.compasso.votacao.controller;
 import java.net.URI;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class VoteController {
 	
 	@PostMapping
 	@Transactional
-	private ResponseEntity<DetailTopicDTO> vote(@RequestBody VoteForm form, UriComponentsBuilder uriBuilder) {
+	private ResponseEntity<DetailTopicDTO> vote(@RequestBody @Valid VoteForm form, UriComponentsBuilder uriBuilder) {
 		Vote vote = voteService.sendVote(form);
 		
 		URI uri = uriBuilder.path("/vote/{$id}").buildAndExpand(vote.getTopicId()).toUri();

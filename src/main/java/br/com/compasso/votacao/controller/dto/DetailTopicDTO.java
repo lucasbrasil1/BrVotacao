@@ -13,7 +13,7 @@ public class DetailTopicDTO {
 		this.id = topic.getId();
 		this.title = topic.getTitle();
 		this.description = topic.getDescription();
-		this.status = topic.getStatusString();
+		this.status = topic.getStatus().toString();
 	}
 
 	public String getStatus() {

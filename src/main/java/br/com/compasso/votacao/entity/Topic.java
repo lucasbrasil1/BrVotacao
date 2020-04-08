@@ -24,7 +24,7 @@ public class Topic {
 	private String title;
 	private String description;
 	@Enumerated(EnumType.STRING)
-	private TopicStatusEnum status;
+	private TopicStatusEnum status = TopicStatusEnum.EM_PAUTA;
 	private LocalDateTime createdAt = LocalDateTime.now();
 	@OneToOne
 	private Associate author;
@@ -91,10 +91,6 @@ public class Topic {
 
 	public TopicStatusEnum getStatus() {
 		return status;
-	}
-	
-	public String getStatusString() {
-		return status.toString();
 	}
 
 	public void setStatus(TopicStatusEnum status) {

@@ -11,15 +11,13 @@ public class DetailSessionDTO {
 	private String description;
 	private LocalDateTime begining;
 	private LocalDateTime ending;
-	private String status;
 
 	public DetailSessionDTO(Session session) {
 		this.id = session.getId();
-		this.title = session.getSchedule().getTitle();
-		this.description = session.getSchedule().getDescription();
+		this.title = session.getTopic().getTitle();
+		this.description = session.getTopic().getDescription();
 		this.begining = session.getBegining();
 		this.ending = session.getEnding();
-		this.status = session.getStatus().name();
 	}
 
 	public Long getId() {
@@ -42,7 +40,4 @@ public class DetailSessionDTO {
 		return ending;
 	}
 
-	public String getStatus() {
-		return status;
-	}
 }

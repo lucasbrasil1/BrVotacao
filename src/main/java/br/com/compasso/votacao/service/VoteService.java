@@ -27,8 +27,8 @@ public class VoteService {
 	
 	public Vote sendVote(VoteForm form) {
 		Vote vote = convertFromForm(form);
-		checkIfAssociateAlreadyVoted(vote);
 		checkIfSessionDidNotExpired(vote);
+		checkIfAssociateAlreadyVoted(vote);
 		addVoteToVotesListOnTopic(vote);
 		saveVote(vote);
 		return vote;

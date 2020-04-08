@@ -15,6 +15,13 @@ public class Associate {
 	private String email;
 	private String password;
 
+	public Associate() {}
+	
+	public Associate(Long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+	
 	public Long getId() {
 		return id;
 	}

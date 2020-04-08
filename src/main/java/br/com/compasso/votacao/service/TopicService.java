@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.compasso.votacao.entity.Session;
 import br.com.compasso.votacao.entity.Topic;
 import br.com.compasso.votacao.entity.Vote;
+import br.com.compasso.votacao.enumeration.TopicStatusEnum;
 import br.com.compasso.votacao.repository.TopicRepository;
 
 @Service
@@ -16,11 +18,8 @@ public class TopicService {
 	@Autowired
 	private TopicRepository topicRepository;
 
-	public Topic getOne(Long id) {
-		Optional<Topic> topic = topicRepository.findById(id);
-		if (topic.isPresent())
-			return topic.get();
-		throw new NullPointerException("Id da pauta não encontrada");
+	public Optional<Topic> getOne(Long id) {
+		return topicRepository.findById(id);
 	}
 
 	public List<Topic> findAll() {
@@ -32,7 +31,7 @@ public class TopicService {
 	}
 
 	public List<Vote> findVotesByScheduleId(Long id) {
-		return getOne(id).getVotes();
+		return getOne(id).get().getVotes();
 	}
 
 	public boolean checkForAssociateVote(Vote vote) {
@@ -45,18 +44,19 @@ public class TopicService {
 		return true;
 	}
 	
-	public String getTopicResults(Topic topic) {
-		String message = "A pauta: "+topic.getTitle()+", foi ";
+	public Topic getTopicResults(Topic topic) {
 		if(topicAproved(topic))
-			message += "aprovada";
+			topic.setStatus(TopicStatusEnum.APROVADO);
 		else 
-			message += "negada";
-		return message;
+			topic.setStatus(TopicStatusEnum.NEGADO);
+		return topic;
 	}
 
 	private boolean topicAproved(Topic topic) {
 		return topic.getVotesYes() > topic.getVotesNo();
 	}
 
-	
+	public void getTopicResultsBySession(Session session) {
+		save(getTopicResults(session.getTopic()));
+	}
 }

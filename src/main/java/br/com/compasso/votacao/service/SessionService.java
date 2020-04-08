@@ -8,9 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.compasso.votacao.controller.form.SessionForm;
-import br.com.compasso.votacao.entity.Topic;
-import br.com.compasso.votacao.enumeration.SessionStatusEnum;
 import br.com.compasso.votacao.entity.Session;
+import br.com.compasso.votacao.entity.Topic;
 import br.com.compasso.votacao.repository.SessionRepository;
 
 @Service
@@ -18,12 +17,12 @@ public class SessionService {
 
 	@Autowired
 	private SessionRepository sessionRepository;
-	
-	public Session get(Long idSession) {
-		Optional<Session> session = sessionRepository.findById(idSession);
-		if(session.isPresent())
-			return session.get();
-		throw new NullPointerException("Session ID not found!");
+
+	@Autowired
+	private TopicService topicService;
+
+	public Optional<Session> getOne(Long idSession) {
+		return sessionRepository.findById(idSession);
 	}
 
 	public List<Session> getAll() {
@@ -31,7 +30,7 @@ public class SessionService {
 	}
 
 	public Session convert(SessionForm form, TopicService topicService) {
-		Topic topic = topicService.getOne(form.getIdSchedule());
+		Topic topic = topicService.getOne(form.getIdTopic()).get();
 		Integer time = form.getTimeInMinutes();
 		return new Session(topic, time);
 	}
@@ -41,21 +40,37 @@ public class SessionService {
 	}
 
 	public void timeChecker(Session session) {
-		if(currentTimeIsAfterEndTime(session)) {
+		if (hasEnded(session)) {
 			throw new IllegalStateException("Sessão já expirou!");
 		}
 	}
-	
-	public boolean currentTimeIsAfterEndTime(Session session) {
+
+	public boolean hasEnded(Session session) {
 		return LocalDateTime.now().isAfter(session.getEnding());
 	}
-	
+
+	public void checkForEndedSessionsCron() {
+		getAll().forEach(session -> {
+			if (hasEnded(session))
+				endSession(session);
+		});
+	}
 
 	public void endSession(Session session) {
-		if (currentTimeIsAfterEndTime(session))
-			session.setStatus(SessionStatusEnum.FINALIZADA);
-		else
-			session.setStatus(SessionStatusEnum.EM_VOTACAO);
-		sessionRepository.save(session);
+		topicService.getTopicResultsBySession(session);
 	}
+
+	public void send(Session session) {
+		if (!topicAlreadyStarted(session.getTopic().getId())) {
+			save(session);
+		}
+	}
+
+	public boolean topicAlreadyStarted(Long id) {
+		Optional<Session> findByTopic = sessionRepository.findByTopic_Id(id);
+		if (findByTopic.isPresent())
+			return true;
+		return false;
+	}
+
 }

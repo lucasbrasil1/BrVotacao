@@ -20,8 +20,8 @@ public class SessionDTO {
 		this.minutes = session.getMinutes();
 		this.beginAt = session.getBegining();
 		this.endAt = session.getEnding();
-		this.scheduleTitle = session.getSchedule().getTitle();
-		this.description = session.getSchedule().getDescription();
+		this.scheduleTitle = session.getTopic().getTitle();
+		this.description = session.getTopic().getDescription();
 	}
 
 	public Long getId() {

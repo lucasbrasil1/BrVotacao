@@ -1,7 +1,5 @@
 package br.com.compasso.votacao.entity;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -18,7 +16,6 @@ public class Vote {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private LocalDateTime createdAt = LocalDateTime.now();
 	@OneToOne
 	private Associate associate;
 	@ManyToOne
@@ -56,14 +53,6 @@ public class Vote {
 
 	public void setSession(Session session) {
 		this.session = session;
-	}
-
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
 	}
 
 	@Override
@@ -109,7 +98,7 @@ public class Vote {
 	}
 
 	public Topic getTopic() {
-		return getSession().getSchedule();
+		return getSession().getTopic();
 	}
 	
 	public Long getTopicId() {
