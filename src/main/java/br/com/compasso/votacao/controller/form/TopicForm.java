@@ -21,14 +21,6 @@ public class TopicForm {
 		return description;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public Topic convert() {
 		return new Topic(title, description);
 	}

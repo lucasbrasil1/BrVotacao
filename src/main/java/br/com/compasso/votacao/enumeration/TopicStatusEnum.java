@@ -4,6 +4,7 @@ public enum TopicStatusEnum {
 
 	APROVADO,
 	EM_PAUTA,
-	NEGADO;
+	NEGADO,
+	EMPATADO;
 	
 }

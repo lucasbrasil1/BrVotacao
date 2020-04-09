@@ -10,6 +10,10 @@ public class FormErrorDTO {
 		this.message = message;
 	}
 
+	public FormErrorDTO(String message) {
+		this.message = message;
+	}
+
 	public String getField() {
 		return field;
 	}

@@ -14,12 +14,11 @@ public class AssociateService {
 	@Autowired
 	private AssociateRepository associateRepository;
 
-	public Optional<Associate> get(Long idAssociate) {
-		return associateRepository.findById(idAssociate);
-	}
-	
 	public Associate getOne(Long idAssociate) {
-		return associateRepository.getOne(idAssociate);
+		Optional<Associate> optional = associateRepository.findById(idAssociate);
+		if(optional.isEmpty())
+			throw new IllegalArgumentException("Id do associado "+ idAssociate +" não foi encontrado!");
+		return optional.get();
 	}
 	
 	

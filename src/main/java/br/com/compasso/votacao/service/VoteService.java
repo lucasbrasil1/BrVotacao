@@ -1,8 +1,5 @@
 package br.com.compasso.votacao.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.compasso.votacao.controller.dto.VoteDTO;
@@ -12,24 +9,32 @@ import br.com.compasso.votacao.repository.VoteRepository;
 
 @Service
 public class VoteService {
+
+//	@Autowired
+//	private AssociateService associateService;
+//
+//	@Autowired
+//	private SessionService sessionService;
+//
+//	@Autowired
+//	private VoteRepository voteRepository;
 	
-	@Autowired
 	private AssociateService associateService;
-	
-	@Autowired
 	private SessionService sessionService;
-	
-	@Autowired
-	private TopicService topicService;
-	
-	@Autowired
 	private VoteRepository voteRepository;
+	
+	public VoteService(AssociateService associateService, SessionService sessionService, VoteRepository voteRepository) {
+		this.associateService = associateService;
+		this.sessionService = sessionService;
+		this.voteRepository = voteRepository;
+	}
 	
 	public Vote sendVote(VoteForm form) {
 		Vote vote = convertFromForm(form);
-		checkIfSessionDidNotExpired(vote);
-		checkIfAssociateAlreadyVoted(vote);
-		addVoteToVotesListOnTopic(vote);
+
+		sessionService.associateAndSessionVerifier(vote, vote.getSession());
+
+		addVoteToSessionList(vote);
 		saveVote(vote);
 		return vote;
 	}
@@ -38,8 +43,8 @@ public class VoteService {
 		return new VoteDTO(voteRepository.save(vote));
 	}
 
-	private void addVoteToVotesListOnTopic(Vote vote) {
-		vote.getTopic().addVoteToList(vote);
+	public void addVoteToSessionList(Vote vote) {
+		sessionService.addToList(vote);
 	}
 
 	private Vote convertFromForm(VoteForm form) {
@@ -47,16 +52,4 @@ public class VoteService {
 		return vote;
 	}
 
-	private void checkIfSessionDidNotExpired(Vote vote) {
-		sessionService.timeChecker(vote.getSession());
-	}
-
-	private void checkIfAssociateAlreadyVoted(Vote vote) {
-		topicService.checkForAssociateVote(vote);
-	}
-
-	public List<Vote> findAllVotes(Long id) {
-		return topicService.findVotesByScheduleId(id);
-	}
-	
 }

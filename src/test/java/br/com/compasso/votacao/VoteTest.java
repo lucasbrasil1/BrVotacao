@@ -1,51 +1,99 @@
 package br.com.compasso.votacao;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import br.com.compasso.votacao.entity.Associate;
 import br.com.compasso.votacao.entity.Session;
 import br.com.compasso.votacao.entity.Topic;
+import br.com.compasso.votacao.entity.Vote;
+import br.com.compasso.votacao.enumeration.TopicStatusEnum;
+import br.com.compasso.votacao.enumeration.VoteEnum;
+import br.com.compasso.votacao.repository.SessionRepository;
+import br.com.compasso.votacao.repository.VoteRepository;
+import br.com.compasso.votacao.service.AssociateService;
+import br.com.compasso.votacao.service.SessionService;
 import br.com.compasso.votacao.service.VoteService;
 
+@SpringBootTest
 public class VoteTest {
 
-	Associate associateLucas;
-	Associate associateLarissa;
-	Associate associateMarcos;
-	Associate associateCarol;
-	Associate associateDougras;
+	private Associate associate1;
+	private Associate associate2;
+	private Associate associate3;
+	private Topic topic;
+	private Session session;
 
-	Topic topic1;
-	Topic topic2;
-	Topic topic3;
-	Topic topic4;
+	private SessionRepository sessionRepository;
+	private VoteRepository voteRepository;
+	private SessionService sessionService;
+	private AssociateService associateService;
+	private VoteService voteService;
+
+	@Before
+	public void createStuff() {
+		associate1 = new Associate(1l, "Lucas");
+		associate2 = new Associate(2l, "Lari");
+		associate3 = new Associate(3l, "Penny");
+
+		topic = new Topic("Title", "Description");
+
+		session = new Session(topic, 1);
+
+		sessionRepository = mock(SessionRepository.class);
+		voteRepository = mock(VoteRepository.class);
+		sessionService = new SessionService(sessionRepository);
+		associateService = new AssociateService();
+		voteService = new VoteService(associateService, sessionService, voteRepository);
+	}
+
+	@Test
+	public void deveResultarEmStatusAprovado() {
+		voteService.addVoteToSessionList(new Vote(associate1, session, VoteEnum.SIM));
+		voteService.addVoteToSessionList(new Vote(associate2, session, VoteEnum.NAO));
+		voteService.addVoteToSessionList(new Vote(associate3, session, VoteEnum.SIM));
+
+		sessionService.endSession(session);
+
+		assertEquals(TopicStatusEnum.APROVADO, session.getStatus());
+		assertEquals(3, session.getVotes().size());
+	}
+
+	@Test
+	public void deveResultarEmStatusNegado() {
+		voteService.addVoteToSessionList(new Vote(associate1, session, VoteEnum.SIM));
+		voteService.addVoteToSessionList(new Vote(associate2, session, VoteEnum.NAO));
+		voteService.addVoteToSessionList(new Vote(associate3, session, VoteEnum.NAO));
+
+		sessionService.endSession(session);
+
+		assertEquals(TopicStatusEnum.NEGADO, session.getStatus());
+		assertEquals(3, session.getVotes().size());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void naoDevePermitirVotosDoMesmoAssociado() {
+		voteService.addVoteToSessionList(new Vote(associate1, session, VoteEnum.SIM));
+		voteService.addVoteToSessionList(new Vote(associate1, session, VoteEnum.NAO));
+		voteService.addVoteToSessionList(new Vote(associate3, session, VoteEnum.NAO));
+		
+		sessionService.endSession(session);
+		
+		assertEquals(2, session.getVotes().size());
+	}
 	
-	@Autowired
-	private VoteService service;
-
-	public void main() {
-		createAssociates();
-		createTopics();
-
-		Session session = new Session(topic1, 1);
-
+	@Test
+	public void deveResultarEmEmpate() {
+		voteService.addVoteToSessionList(new Vote(associate1, session, VoteEnum.SIM));
+		voteService.addVoteToSessionList(new Vote(associate2, session, VoteEnum.NAO));
+		
+		sessionService.endSession(session);
+		
+		assertEquals(TopicStatusEnum.EMPATADO, session.getStatus());
+	}
 	
-	}
-
-	private void createTopics() {
-		topic1 = new Topic("agua", "mais agua");
-		topic2 = new Topic("agua", "mais agua");
-		topic3 = new Topic("agua", "mais agua");
-		topic4 = new Topic("agua", "mais agua");
-
-	}
-
-	private void createAssociates() {
-		associateLucas = new Associate(Long.getLong("1"), "Lucas");
-		associateLarissa = new Associate(Long.getLong("2"), "Larissa");
-		associateMarcos = new Associate(Long.getLong("3"), "Marcos");
-		associateCarol = new Associate(Long.getLong("4"), "Carol");
-		associateDougras = new Associate(Long.getLong("5"), "Dougras");
-	}
-
 }

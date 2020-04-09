@@ -1,7 +1,5 @@
 package br.com.compasso.votacao.service;
 
-import java.util.Timer;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -17,11 +15,6 @@ public class ScheduleMethods {
 	@Scheduled(fixedRate = 10000)
 	private void schedule() {
 		sessionService.checkForEndedSessionsCron();
-	}
-	
-	private void tryTimer() {
-		Timer timer = new Timer();
-//		timer.
 	}
 	
 }

@@ -45,8 +45,16 @@ public class VoteForm {
 	
 	public Vote convert(AssociateService associateService, SessionService sessionService) {
 		Associate associate = associateService.getOne(idAssociate);
-		Session session = sessionService.getOne(idSession).get();
-		return new Vote(associate, session, VoteEnum.valueOf(getVote()));
+		Session session = sessionService.getOne(idSession);
+		VoteEnum voteValue = checkVoteFormat();
+		return new Vote(associate, session, voteValue);
+	}
+	
+	public VoteEnum checkVoteFormat() {
+		String upperVote = getVote().toUpperCase();
+		if(upperVote.equals(VoteEnum.SIM.toString()) || upperVote.equals(VoteEnum.NAO.toString()))
+			return VoteEnum.valueOf(upperVote);
+		throw new IllegalArgumentException("Valor: "+ upperVote+" não é valido para votos. Somente SIM ou NAO." );
 	}
 	
 }

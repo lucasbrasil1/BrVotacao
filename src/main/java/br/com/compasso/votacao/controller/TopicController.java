@@ -48,9 +48,9 @@ public class TopicController {
 	@PostMapping
 	public ResponseEntity<TopicDTO> cadastrar(@RequestBody @Valid TopicForm form, UriComponentsBuilder uriBuilder) {
 		Topic topic = form.convert();
-		service.save(topic);
+		service.initialize(topic);
 
-		URI uri = uriBuilder.path("/schedules/{$id}").buildAndExpand(topic.getId()).toUri();
+		URI uri = uriBuilder.path("/topic/{$id}").buildAndExpand(topic.getId()).toUri();
 		return ResponseEntity.created(uri).body(new TopicDTO(topic));
 	}
 

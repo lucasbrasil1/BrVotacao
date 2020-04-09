@@ -1,15 +1,19 @@
 package br.com.compasso.votacao.service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.compasso.votacao.controller.form.SessionForm;
 import br.com.compasso.votacao.entity.Session;
 import br.com.compasso.votacao.entity.Topic;
+import br.com.compasso.votacao.entity.Vote;
+import br.com.compasso.votacao.enumeration.TopicStatusEnum;
 import br.com.compasso.votacao.repository.SessionRepository;
 
 @Service
@@ -17,29 +21,31 @@ public class SessionService {
 
 	@Autowired
 	private SessionRepository sessionRepository;
+	
+	public SessionService(SessionRepository sessionRepository) {
+		this.sessionRepository = sessionRepository;
+	}
 
-	@Autowired
-	private TopicService topicService;
-
-	public Optional<Session> getOne(Long idSession) {
-		return sessionRepository.findById(idSession);
+	public Session getOne(Long idSession) {
+		Optional<Session> optional = sessionRepository.findById(idSession);
+		if(optional.isEmpty())
+			throw new IllegalArgumentException("Sessão "+ idSession+ " não encontrada!");
+		return optional.get();
 	}
 
 	public List<Session> getAll() {
 		return sessionRepository.findAll();
 	}
 
-	public Session convert(SessionForm form, TopicService topicService) {
-		Topic topic = topicService.getOne(form.getIdTopic()).get();
-		Integer time = form.getTimeInMinutes();
-		return new Session(topic, time);
+	public List<Session> getAllActive() {
+		return sessionRepository.findByEndingLessThan(LocalDateTime.now());
 	}
 
 	public void save(Session session) {
 		sessionRepository.save(session);
 	}
 
-	public void timeChecker(Session session) {
+	public void throwExcepitonIfSessionHasExpired(Session session) {
 		if (hasEnded(session)) {
 			throw new IllegalStateException("Sessão já expirou!");
 		}
@@ -56,21 +62,45 @@ public class SessionService {
 		});
 	}
 
+	@Transactional
+	public void start(Topic topic) {
+		Session session = new Session(topic, 1);
+		save(session);
+	}	
+
 	public void endSession(Session session) {
-		topicService.getTopicResultsBySession(session);
+		save(getSessionResults(session));
 	}
 
-	public void send(Session session) {
-		if (!topicAlreadyStarted(session.getTopic().getId())) {
-			save(session);
+	public boolean checkForAssociateVote(Vote vote, Session session) {
+		Collection<Vote> votes = session.getVotes();
+		for (Vote v : votes) {
+			if (v.getAssociate().getId().equals(vote.getAssociate().getId())) {
+				throw new IllegalArgumentException("Associado " + vote.getAssociate().getName() + " já votou!");
+			}
 		}
+		return true;
 	}
 
-	public boolean topicAlreadyStarted(Long id) {
-		Optional<Session> findByTopic = sessionRepository.findByTopic_Id(id);
-		if (findByTopic.isPresent())
-			return true;
-		return false;
+	public Session getSessionResults(Session session) {
+		if (session.getVotesYes() > session.getVotesNo())
+			session.setStatus(TopicStatusEnum.APROVADO);
+		else if(session.getVotesYes() < session.getVotesNo())
+			session.setStatus(TopicStatusEnum.NEGADO);
+		else
+			session.setStatus(TopicStatusEnum.EMPATADO);
+		return session;
 	}
 
+	public void associateAndSessionVerifier(Vote vote, Session session) {
+		throwExcepitonIfSessionHasExpired(session);
+		checkForAssociateVote(vote, session);
+	}
+
+	public void addToList(Vote vote) {
+		Session session = vote.getSession();
+		associateAndSessionVerifier(vote, vote.getSession());
+		session.addVoteToList(vote);
+		
+	}
 }
