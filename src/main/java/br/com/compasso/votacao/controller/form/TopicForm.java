@@ -1,5 +1,7 @@
 package br.com.compasso.votacao.controller.form;
 
+import javax.validation.constraints.Positive;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.sun.istack.NotNull;
@@ -12,6 +14,8 @@ public class TopicForm {
 	private String title;
 	@NotNull @Length(min = 10)
 	private String description;
+	@Positive
+	private int minutes = 1;
 
 	public String getTitle() {
 		return title;
@@ -23,6 +27,10 @@ public class TopicForm {
 
 	public Topic convert() {
 		return new Topic(title, description);
+	}
+
+	public int getMinutes() {
+		return minutes;
 	}
 
 }

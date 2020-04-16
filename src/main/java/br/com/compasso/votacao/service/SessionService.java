@@ -56,15 +56,15 @@ public class SessionService {
 	}
 
 	public void checkForEndedSessionsCron() {
-		getAll().forEach(session -> {
+		getAllActive().forEach(session -> {
 			if (hasEnded(session))
 				endSession(session);
 		});
 	}
 
 	@Transactional
-	public void start(Topic topic) {
-		Session session = new Session(topic, 1);
+	public void start(Topic topic, int minutes) {
+		Session session = new Session(topic, minutes);
 		save(session);
 	}	
 

@@ -1,23 +1,25 @@
 package br.com.compasso.votacao;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
+import br.com.compasso.votacao.controller.form.VoteForm;
 import br.com.compasso.votacao.entity.Associate;
 import br.com.compasso.votacao.entity.Session;
 import br.com.compasso.votacao.entity.Topic;
 import br.com.compasso.votacao.entity.Vote;
 import br.com.compasso.votacao.enumeration.TopicStatusEnum;
 import br.com.compasso.votacao.enumeration.VoteEnum;
+import br.com.compasso.votacao.repository.AssociateRepository;
 import br.com.compasso.votacao.repository.SessionRepository;
 import br.com.compasso.votacao.repository.VoteRepository;
 import br.com.compasso.votacao.service.AssociateService;
 import br.com.compasso.votacao.service.SessionService;
 import br.com.compasso.votacao.service.VoteService;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class VoteTest {
@@ -30,6 +32,7 @@ public class VoteTest {
 
 	private SessionRepository sessionRepository;
 	private VoteRepository voteRepository;
+	private AssociateRepository associateRepository;
 	private SessionService sessionService;
 	private AssociateService associateService;
 	private VoteService voteService;
@@ -47,7 +50,7 @@ public class VoteTest {
 		sessionRepository = mock(SessionRepository.class);
 		voteRepository = mock(VoteRepository.class);
 		sessionService = new SessionService(sessionRepository);
-		associateService = new AssociateService();
+		associateService = new AssociateService(associateRepository);
 		voteService = new VoteService(associateService, sessionService, voteRepository);
 	}
 

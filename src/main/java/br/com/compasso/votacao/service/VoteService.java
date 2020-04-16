@@ -9,15 +9,6 @@ import br.com.compasso.votacao.repository.VoteRepository;
 
 @Service
 public class VoteService {
-
-//	@Autowired
-//	private AssociateService associateService;
-//
-//	@Autowired
-//	private SessionService sessionService;
-//
-//	@Autowired
-//	private VoteRepository voteRepository;
 	
 	private AssociateService associateService;
 	private SessionService sessionService;

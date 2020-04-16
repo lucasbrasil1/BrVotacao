@@ -17,7 +17,13 @@ public class VoteForm {
 	private Long idSession;
 	@NotNull
 	private String vote;
-
+	
+	public VoteForm(Long idAssociate, Long idSession, String vote) {
+		this.idAssociate = idAssociate;
+		this.idSession = idSession;
+		this.vote = vote;
+	}
+	
 	public Long getIdAssociate() {
 		return idAssociate;
 	}
@@ -44,7 +50,7 @@ public class VoteForm {
 	}
 	
 	public Vote convert(AssociateService associateService, SessionService sessionService) {
-		Associate associate = associateService.getOne(idAssociate);
+		Associate associate = associateService.getById(idAssociate);
 		Session session = sessionService.getOne(idSession);
 		VoteEnum voteValue = checkVoteFormat();
 		return new Vote(associate, session, voteValue);
