@@ -15,24 +15,22 @@ import br.com.compasso.votacao.repository.TopicRepository;
 @Service
 public class TopicService {
 
-	@Autowired
+	private SessionService sessionService;
 	private TopicRepository topicRepository;
 	
-	@Autowired 
-	private SessionService sessionService;
+	public TopicService(TopicRepository topicRepository, SessionService sessionService) {
+		this.topicRepository = topicRepository;
+		this.sessionService = sessionService;
+	}
 
 	public Optional<Topic> getOne(Long id) {
 		return topicRepository.findById(id);
 	}
 
-	public void save(Topic topic) {
-		topicRepository.save(topic);
-	}
-
 	@Transactional
-	public void initialize(Topic topic, int minutes) {
+	public Topic initialize(Topic topic, int minutes) {
 		sessionService.start(topic, minutes);
-		topicRepository.save(topic);
+		return topicRepository.save(topic);
 	}
 
 	public Page<Topic> findAll(Pageable paginacao) {

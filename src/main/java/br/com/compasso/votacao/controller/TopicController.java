@@ -51,6 +51,7 @@ public class TopicController {
 	}
 
 	@GetMapping("/{id}")
+	@Cacheable(key = "{id}")
 	public ResponseEntity<DetailTopicDTO> detail(@PathVariable Long id) {
 		Optional<Topic> topic = service.getOne(id);
 		if (topic.isPresent()) {
@@ -64,8 +65,7 @@ public class TopicController {
 	@Transactional
 	@CacheEvict(value = "topicList", allEntries = true)
 	public ResponseEntity<TopicDTO> cadastrar(@RequestBody @Valid TopicForm form, UriComponentsBuilder uriBuilder) {
-		Topic topic = form.convert();
-		service.initialize(topic, form.getMinutes());
+		Topic topic = service.initialize(form.convert(), form.getMinutes());
 
 		URI uri = uriBuilder.path("/topic/{$id}").buildAndExpand(topic.getId()).toUri();
 		return ResponseEntity.created(uri).body(new TopicDTO(topic));

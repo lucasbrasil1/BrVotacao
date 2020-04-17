@@ -8,6 +8,8 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.compasso.votacao.entity.Session;
@@ -33,8 +35,8 @@ public class SessionService {
 		return optional.get();
 	}
 
-	public List<Session> getAll() {
-		return sessionRepository.findAll();
+	public Page<Session> findAll(Pageable pageable) {
+		return sessionRepository.findAll(pageable);
 	}
 
 	public List<Session> getAllActive() {
@@ -92,15 +94,15 @@ public class SessionService {
 		return session;
 	}
 
-	public void associateAndSessionVerifier(Vote vote, Session session) {
+	public void verificationRoutine(Vote vote) {
+		Session session = sessionRepository.getOne(vote.getSessionId());
 		throwExcepitonIfSessionHasExpired(session);
 		checkForAssociateVote(vote, session);
+		session.addVoteToList(vote);
 	}
 
-	public void addToList(Vote vote) {
-		Session session = vote.getSession();
-		associateAndSessionVerifier(vote, vote.getSession());
-		session.addVoteToList(vote);
-		
+	public Page<Session> findByTopicTitleContains(String topicTitle, Pageable pageable) {
+		return sessionRepository.findByTopicTitleContains(topicTitle, pageable);
 	}
+
 }

@@ -3,7 +3,6 @@ package br.com.compasso.votacao.controller.form;
 import com.sun.istack.NotNull;
 
 import br.com.compasso.votacao.entity.Associate;
-import br.com.compasso.votacao.entity.Session;
 import br.com.compasso.votacao.entity.Vote;
 import br.com.compasso.votacao.enumeration.VoteEnum;
 import br.com.compasso.votacao.service.AssociateService;
@@ -51,9 +50,8 @@ public class VoteForm {
 	
 	public Vote convert(AssociateService associateService, SessionService sessionService) {
 		Associate associate = associateService.getById(idAssociate);
-		Session session = sessionService.getOne(idSession);
 		VoteEnum voteValue = checkVoteFormat();
-		return new Vote(associate, session, voteValue);
+		return new Vote(associate, this.idSession, voteValue);
 	}
 	
 	public VoteEnum checkVoteFormat() {

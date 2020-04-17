@@ -1,8 +1,7 @@
 package br.com.compasso.votacao.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -25,12 +24,16 @@ public class SessionController {
 	private SessionService sessionService;
 	
 	@GetMapping
-	public List<SessionDTO> lista(@RequestParam(required = false) String topicTitle,
-			@RequestParam(required = false) String status,
+	public Page<SessionDTO> lista(@RequestParam(required = false) String topicTitle,
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pageable){
 	
-		List<Session> sessions = sessionService.getAll();
-		return SessionDTO.convert(sessions);
+		if(topicTitle == null) {
+			Page<Session> sessions = sessionService.findAll(pageable);
+			return SessionDTO.convert(sessions);
+		} else {
+			Page<Session> sessions = sessionService.findByTopicTitleContains(topicTitle, pageable);
+			return SessionDTO.convert(sessions);
+		}
 	}
 	
 	@GetMapping("/{id}")

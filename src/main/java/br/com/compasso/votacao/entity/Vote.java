@@ -6,7 +6,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import br.com.compasso.votacao.enumeration.VoteEnum;
@@ -18,16 +17,15 @@ public class Vote {
 	private Long id;
 	@OneToOne
 	private Associate associate;
-	@ManyToOne
-	private Session session;
+	private Long sessionId;
 	@Enumerated(EnumType.STRING)
 	private VoteEnum vote;
 
 	public Vote() {}
 	
-	public Vote(Associate associate, Session session, VoteEnum vote) {
+	public Vote(Associate associate, Long sessionId, VoteEnum vote) {
 		this.associate = associate;
-		this.session = session;
+		this.sessionId = sessionId;
 		this.vote = vote;
 	}
 	
@@ -45,14 +43,6 @@ public class Vote {
 
 	public void setAssociate(Associate associate) {
 		this.associate = associate;
-	}
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
 	}
 
 	@Override
@@ -81,6 +71,18 @@ public class Vote {
 	}
 
 
+	public Long getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(Long sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public void setVote(VoteEnum vote) {
+		this.vote = vote;
+	}
+
 	public VoteEnum getVote() {
 		return vote;
 	}
@@ -92,18 +94,5 @@ public class Vote {
 	public Long getIdAssociate(Vote vote) {
 		return vote.getAssociate().getId();
 	}
-
-	public Long getSessionId() {
-		return getSession().getId();
-	}
-
-	public Topic getTopic() {
-		return getSession().getTopic();
-	}
-	
-	public Long getTopicId() {
-		return getTopic().getId();
-	}
-	
 
 }
