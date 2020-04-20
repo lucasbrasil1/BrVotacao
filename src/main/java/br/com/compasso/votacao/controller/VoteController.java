@@ -15,19 +15,19 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.compasso.votacao.controller.dto.VoteDTO;
 import br.com.compasso.votacao.controller.form.VoteForm;
-import br.com.compasso.votacao.service.VoteService;
+import br.com.compasso.votacao.service.VoteBusiness;
 
 @RestController
 @RequestMapping("/vote")
 public class VoteController {
 
 	@Autowired
-	private VoteService voteService;
+	private VoteBusiness voteBusiness;
 	
 	@PostMapping
 	@Transactional
 	private ResponseEntity<VoteDTO> vote(@RequestBody @Valid VoteForm form, UriComponentsBuilder uriBuilder) {
-		VoteDTO voteDTO = voteService.sendVote(form);
+		VoteDTO voteDTO = voteBusiness.sendVote(form);
 		
 		URI uri = uriBuilder.path("/session/{$id}").buildAndExpand(voteDTO).toUri();
 		return ResponseEntity.created(uri).body(voteDTO);

@@ -26,7 +26,9 @@ import br.com.compasso.votacao.controller.dto.DetailTopicDTO;
 import br.com.compasso.votacao.controller.dto.TopicDTO;
 import br.com.compasso.votacao.controller.form.TopicForm;
 import br.com.compasso.votacao.entity.Topic;
+import br.com.compasso.votacao.service.SessionService;
 import br.com.compasso.votacao.service.TopicService;
+import br.com.compasso.votacao.service.TopicSessionBusiness;
 
 
 @RestController
@@ -34,7 +36,13 @@ import br.com.compasso.votacao.service.TopicService;
 public class TopicController {
 
 	@Autowired
-	public TopicService service;
+	public TopicService topicService;
+	
+	@Autowired
+	public SessionService sessionService;
+	
+	@Autowired
+	public TopicSessionBusiness business;
 
 	@GetMapping
 	@Cacheable(value = "topicList")
@@ -42,10 +50,10 @@ public class TopicController {
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 10) Pageable pageable){
 		
 		if(topicTitle == null) {
-			Page<Topic> topics = service.findAll(pageable);
+			Page<Topic> topics = topicService.findAllWith(pageable);
 			return TopicDTO.convert(topics);
 		} else {
-			Page<Topic> topics = service.findByTitleContains(topicTitle, pageable);
+			Page<Topic> topics = topicService.findByTitleContains(topicTitle, pageable);
 			return TopicDTO.convert(topics);
 		}
 	}
@@ -53,7 +61,7 @@ public class TopicController {
 	@GetMapping("/{id}")
 	@Cacheable(key = "{id}")
 	public ResponseEntity<DetailTopicDTO> detail(@PathVariable Long id) {
-		Optional<Topic> topic = service.getOne(id);
+		Optional<Topic> topic = topicService.getOne(id);
 		if (topic.isPresent()) {
 			return ResponseEntity.ok(new DetailTopicDTO(topic.get()));
 		}
@@ -65,7 +73,7 @@ public class TopicController {
 	@Transactional
 	@CacheEvict(value = "topicList", allEntries = true)
 	public ResponseEntity<TopicDTO> cadastrar(@RequestBody @Valid TopicForm form, UriComponentsBuilder uriBuilder) {
-		Topic topic = service.initialize(form.convert(), form.getMinutes());
+		Topic topic = business.initialize(form.convert(), form.getMinutes());
 
 		URI uri = uriBuilder.path("/topic/{$id}").buildAndExpand(topic.getId()).toUri();
 		return ResponseEntity.created(uri).body(new TopicDTO(topic));

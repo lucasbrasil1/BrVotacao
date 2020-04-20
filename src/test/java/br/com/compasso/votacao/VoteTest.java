@@ -15,7 +15,7 @@ import br.com.compasso.votacao.repository.SessionRepository;
 import br.com.compasso.votacao.repository.VoteRepository;
 import br.com.compasso.votacao.service.AssociateService;
 import br.com.compasso.votacao.service.SessionService;
-import br.com.compasso.votacao.service.VoteService;
+import br.com.compasso.votacao.service.VoteBusiness;
 
 @SpringBootTest
 public class VoteTest {

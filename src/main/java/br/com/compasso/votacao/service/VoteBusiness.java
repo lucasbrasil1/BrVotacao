@@ -8,13 +8,13 @@ import br.com.compasso.votacao.entity.Vote;
 import br.com.compasso.votacao.repository.VoteRepository;
 
 @Service
-public class VoteService {
+public class VoteBusiness {
 
 	private AssociateService associateService;
 	private SessionService sessionService;
 	private VoteRepository voteRepository;
 
-	public VoteService(AssociateService associateService, SessionService sessionService,
+	public VoteBusiness(AssociateService associateService, SessionService sessionService,
 			VoteRepository voteRepository) {
 		this.associateService = associateService;
 		this.sessionService = sessionService;
